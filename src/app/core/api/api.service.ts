@@ -1,25 +1,29 @@
-import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Injectable } from '@angular/core';
+import { Observable, from } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { apiClient } from '../http/axios.client';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
-  private readonly http = inject(HttpClient);
-  private readonly baseUrl = '/api';
-
   get<T>(path: string): Observable<T> {
-    return this.http.get<T>(`${this.baseUrl}${path}`);
+    return from(apiClient.get<T>(path)).pipe(map((response) => response.data));
   }
 
-  post<T>(path: string, body: unknown): Observable<T> {
-    return this.http.post<T>(`${this.baseUrl}${path}`, body);
+  post<T>(path: string, body?: unknown): Observable<T> {
+    return from(apiClient.post<T>(path, body)).pipe(
+      map((response) => response.data)
+    );
   }
 
-  put<T>(path: string, body: unknown): Observable<T> {
-    return this.http.put<T>(`${this.baseUrl}${path}`, body);
+  put<T>(path: string, body?: unknown): Observable<T> {
+    return from(apiClient.put<T>(path, body)).pipe(
+      map((response) => response.data)
+    );
   }
 
   delete<T>(path: string): Observable<T> {
-    return this.http.delete<T>(`${this.baseUrl}${path}`);
+    return from(apiClient.delete<T>(path)).pipe(
+      map((response) => response.data)
+    );
   }
 }
