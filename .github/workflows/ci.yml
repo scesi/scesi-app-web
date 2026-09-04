@@ -101,7 +101,7 @@ jobs:
           scan-ref: '.'
           format: 'table'
           severity: 'CRITICAL,HIGH'
-          exit-code: '1'
+          exit-czde: '1'
   build:
     name: Build
     runs-on: ubuntu-latest
