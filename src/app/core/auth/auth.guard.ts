@@ -1,14 +1,23 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
+import { map } from 'rxjs';
 import { AuthService } from './auth.service';
 
+/**
+ * Allows the route only for a signed-in user.
+ *
+ * On a cold start the session has not been resolved yet, so the guard waits
+ * for `loadSession()` instead of bouncing a user who is in fact signed in.
+ */
 export const authGuard: CanActivateFn = () => {
-  const authService = inject(AuthService);
+  const auth = inject(AuthService);
   const router = inject(Router);
 
-  if (authService.isAuthenticated()) {
-    return true;
+  const deny = () => router.createUrlTree(['/login']);
+
+  if (auth.isSessionResolved()) {
+    return auth.isAuthenticated() ? true : deny();
   }
 
-  return router.createUrlTree(['/login']);
+  return auth.loadSession().pipe(map((user) => (user ? true : deny())));
 };
